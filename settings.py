@@ -9,7 +9,7 @@ SEND_BROKEN_LINK_EMAILS = not DEBUG
 OUR_ROOT = os.path.realpath(os.path.dirname(__file__))
 
 ADMINS = (
-    ('Dmitriy Dikiy', 'dima@compulab.co.il'),
+    ('shemsu', 'ramzesich@gmail.com'),
 )
 
 MANAGERS = ADMINS
