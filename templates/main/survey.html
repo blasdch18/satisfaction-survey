@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load media %}
+
+{% block title %}CompuLab customer satisfaction survey{% endblock %}
+
+{% block head_extra %}{% include "snippets/survey.js" %}{% endblock %}
+
+{% block main %}
+<div class="nojs"><h4>Javascript should be supported by and enabled in your browser.</h4></div>
+<div class="content" style="display: none;">
+    <form id="survey_form" method="post" action="{% url survey survey_id %}">
+    <div class="header">
+        <h2>Customer Satisfaction Survey</h2>
+        <div>Please, take a few moments to complete our satisfaction survey.</div>
+    </div>
+    {% for s_node in survey_data.sections %}
+        <table class="section">
+            <caption>{{ s_node.section.name }}</caption>
+            {% for q_node in s_node.questions %}
+                <tr class="question">
+                    <td class="question">
+                        <span class="question">{{ q_node.question.content }}</span>
+                        {% if q_node.terms %}
+                            <div class="terms">
+                                {% for t_node in q_node.terms %}
+                                    <div class="term">
+                                        <div class="term_name">&#8226;&nbsp;{{ t_node.term }}</div>
+                                        {% if t_node.answers %}
+                                            <div class="stars">
+                                                <select class="answers" id="answer_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}_term-{{ t_node.term.pk }}" name="answer_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}_term-{{ t_node.term.pk }}">
+                                                    {% for answer in t_node.answers %}
+                                                        <option value="{{ answer.value }}">{{ answer.value }} &mdash; {{ answer.content }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="comment" id="comm_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}_term-{{ t_node.term.pk }}" style="display: none;">
+                                        <div>
+                                            <span class="comment">You may comment your choice here:</span>
+                                        </div>
+                                        <div class="{% if not forloop.last %}notlast {% endif %}">
+                                            <textarea class="term_comment" cols="30" rows="5" id="comment_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}_term-{{ t_node.term.pk }}" name="comment_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}_term-{{ t_node.term.pk }}"></textarea>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {% if q_node.answers %}
+                                <div class="nonterm stars">
+                                    <select class="answers" id="answer_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}" name="answer_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}">
+                                        {% for answer in q_node.answers %}
+                                            <option value="{{ answer.value }}">{{ answer.value }} &mdash; {{ answer.content }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="comment" id="comm_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}" style="display: none;">
+                                    <span class="comment">You may comment your choice here:</span><br />
+                                    <textarea class="quest_comment" cols="30" rows="5" id="comment_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}" name="comment_sect-{{ s_node.section.pk }}_quest-{{ q_node.question.pk }}"></textarea>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+    <div class="submit">
+        {% csrf_token %}
+        <button type="button" id="submit_survey">Submit</button>
+    </div>
+    </form>
+</div>
+{% endblock %}
